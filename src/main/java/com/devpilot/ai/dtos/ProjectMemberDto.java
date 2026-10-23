@@ -16,8 +16,14 @@ public class ProjectMemberDto {
     private Long id;
 
     private Long userId;
+    
+    // User Name for display
+    private String userName;
 
     private Long projectId;
+
+    // Added: Project Name for direct frontend display
+    private String projectName;
 
     private ProjectMemberRole role;
 

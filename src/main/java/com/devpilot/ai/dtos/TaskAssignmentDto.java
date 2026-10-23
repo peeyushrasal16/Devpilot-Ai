@@ -14,6 +14,8 @@ public class TaskAssignmentDto {
     private Long id;
 
     private Long userId;
+    
+    private String userName;
 
     private Long taskId;
 

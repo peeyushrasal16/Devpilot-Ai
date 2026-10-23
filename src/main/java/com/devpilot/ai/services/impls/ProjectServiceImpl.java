@@ -12,8 +12,10 @@ import com.devpilot.ai.entities.Project;
 import com.devpilot.ai.projections.ProjectProjection;
 import com.devpilot.ai.repositories.ProjectRepository;
 import com.devpilot.ai.services.ProjectService;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
@@ -21,6 +23,25 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    // change the code: inject repositories to cascade delete related records when project is deleted
+    @Autowired
+    private com.devpilot.ai.repositories.ProjectMemberRepository projectMemberRepository;
+
+    @Autowired
+    private com.devpilot.ai.repositories.TaskAssignmentRepository taskAssignmentRepository;
+
+    @Autowired
+    private com.devpilot.ai.repositories.TaskRepository taskRepository;
+
+    @Autowired
+    private com.devpilot.ai.repositories.BugRepository bugRepository;
+
+    @Autowired
+    private com.devpilot.ai.repositories.DocumentationRepository documentationRepository;
+
+    @Autowired
+    private com.devpilot.ai.repositories.ActivityLogRepository activityLogRepository;
 
     @Override
     public ProjectDto createProject(ProjectDto projectDto) {
@@ -77,6 +98,31 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
+        // change the code: cascade delete all child entities to avoid foreign key constraint violations
+        // 1. Delete task assignments for all tasks belonging to this project
+        List<com.devpilot.ai.entities.Task> projectTasks = taskRepository.findByProject_Id(id);
+        if (projectTasks != null && !projectTasks.isEmpty()) {
+            for (com.devpilot.ai.entities.Task t : projectTasks) {
+                taskAssignmentRepository.deleteByTask_Id(t.getId());
+            }
+        }
+
+        // 2. Delete tasks of this project
+        taskRepository.deleteByProject_Id(id);
+
+        // 3. Delete project members
+        projectMemberRepository.deleteByProject_Id(id);
+
+        // 4. Delete bugs
+        bugRepository.deleteByProject_Id(id);
+
+        // 5. Delete documentation
+        documentationRepository.deleteByProject_Id(id);
+
+        // 6. Delete activity logs
+        activityLogRepository.deleteByProject_Id(id);
+
+        // 7. Finally delete the project
         projectRepository.delete(project);
     }
 

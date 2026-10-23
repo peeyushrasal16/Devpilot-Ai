@@ -1,5 +1,10 @@
 package com.devpilot.ai.controllers;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +41,24 @@ public class UserController {
     public ResponseEntity<Boolean> existsByEmail(@RequestParam String email) {
 
         return ResponseEntity.ok(userRepository.existsByEmail(email));
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<Map<String, Object>>> getAllUsers() {
+
+        List<Map<String, Object>> users = userRepository.findAll()
+                .stream()
+                .map(user -> {
+                    Map<String, Object> userData = new HashMap<>();
+                    
+                    userData.put("id", user.getId());
+                    userData.put("name", user.getName());
+                    userData.put("role", user.getRole());
+
+                    return userData;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(users);
     }
 }

@@ -35,5 +35,8 @@ public class BugDto {
     private LocalDateTime updatedAt;
 
     private Long projectId;
+
+    // Added: Project Name for direct frontend display
+    private String projectName;
 }
 

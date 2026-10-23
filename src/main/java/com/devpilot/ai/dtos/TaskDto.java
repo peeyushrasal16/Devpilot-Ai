@@ -2,6 +2,7 @@ package com.devpilot.ai.dtos;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.devpilot.ai.enums.TaskPriority;
 import com.devpilot.ai.enums.TaskStatus;
@@ -32,4 +33,11 @@ public class TaskDto {
     private LocalDateTime updatedAt;
     
     private Long projectId;
+
+    // Added: Project Name for direct frontend display
+    private String projectName;
+    
+ // Assigned users' information
+    private List<TaskAssignmentDto> taskAssignments;
+
 }

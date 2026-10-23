@@ -31,12 +31,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
+    // change the code: enhance logging in AuthTokenFilter to diagnose 401 issues
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        logger.debug("AuthTokenFilter called for URI: {}", request.getRequestURI());
+        String uri = request.getRequestURI();
         try {
             String jwt = parseJwt(request);
+
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
@@ -46,15 +48,17 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(userDetails,
                                 null,
                                 userDetails.getAuthorities());
-                logger.debug("Roles from JWT: {}", userDetails.getAuthorities());
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else if (jwt == null) {
+                logger.warn("AuthTokenFilter: No Bearer token found for URI: {}", uri);
+            } else {
+                logger.warn("AuthTokenFilter: Invalid/Expired JWT token for URI: {}", uri);
             }
         } catch (Exception e) {
-//            logger.error("Cannot set user authentication: {}", e);
-        	logger.error("Cannot set user authentication", e);
+            logger.error("AuthTokenFilter: Cannot set user authentication for URI: " + uri, e);
         }
 
         filterChain.doFilter(request, response);

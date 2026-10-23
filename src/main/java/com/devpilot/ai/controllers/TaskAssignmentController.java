@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,6 +43,17 @@ public class TaskAssignmentController {
                 taskAssignmentService.getTaskAssignmentById(id);
 
         return ResponseEntity.ok(taskAssignment);
+    }
+
+    // change the code: add PUT endpoint to update task assignment
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskAssignmentDto> updateTaskAssignment(
+            @PathVariable Long id,
+            @RequestBody TaskAssignmentDto taskAssignmentDto) {
+
+        TaskAssignmentDto updated = taskAssignmentService.updateTaskAssignment(id, taskAssignmentDto);
+
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping

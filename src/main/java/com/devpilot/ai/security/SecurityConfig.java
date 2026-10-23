@@ -62,49 +62,68 @@ public class SecurityConfig {
                 )
                 .permitAll()
 
+                // Added: Allow ADMIN, PROJECT_MANAGER, and DEVELOPER to get users list for dropdown assignment
+                .requestMatchers(HttpMethod.GET, "/users").hasAnyRole("ADMIN", "PROJECT_MANAGER", "DEVELOPER")
+                
+//.requestMatchers(HttpMethod.POST, "/users/register").permitAll()
+//                
+//.requestMatchers(HttpMethod.GET, "/users/check-email").permitAll()
+                
                 .requestMatchers("/users/**")
                 .hasRole("ADMIN")
 
-                .requestMatchers("/projects/**")
-                .hasAnyRole("ADMIN", "PROJECT_MANAGER","DEVELOPER")
-
-                .requestMatchers("/project-members/**")
+                // change the code: allow ADMIN and PROJECT_MANAGER to delete projects; DEVELOPER cannot delete
+                .requestMatchers(HttpMethod.DELETE, "/projects", "/projects/**")
                 .hasAnyRole("ADMIN", "PROJECT_MANAGER")
 
-                .requestMatchers("/tasks/**")
+                .requestMatchers("/projects", "/projects/**")
+                .hasAnyRole("ADMIN", "PROJECT_MANAGER", "DEVELOPER")
+
+                .requestMatchers("/project-members", "/project-members/**")
+                .hasAnyRole("ADMIN", "PROJECT_MANAGER")
+
+                // change the code: allow ADMIN and PROJECT_MANAGER to delete tasks; DEVELOPER cannot delete
+                .requestMatchers(HttpMethod.DELETE, "/tasks", "/tasks/**")
+                .hasAnyRole("ADMIN", "PROJECT_MANAGER")
+
+                .requestMatchers(HttpMethod.GET, "/tasks", "/tasks/**")
+                .hasAnyRole("ADMIN", "PROJECT_MANAGER", "DEVELOPER")
+
+                .requestMatchers(HttpMethod.POST, "/tasks", "/tasks/**")
+                .hasAnyRole("ADMIN", "PROJECT_MANAGER", "DEVELOPER")
+
+                .requestMatchers(HttpMethod.PUT, "/tasks", "/tasks/**")
+                .hasAnyRole("ADMIN", "PROJECT_MANAGER", "DEVELOPER")
+
+                .requestMatchers("/bugs", "/bugs/**")
                 .hasAnyRole(
                         "ADMIN",
                         "PROJECT_MANAGER",
                         "DEVELOPER"
                 )
 
-                .requestMatchers("/bugs/**")
+                .requestMatchers("/documentation", "/documentation/**")
                 .hasAnyRole(
                         "ADMIN",
                         "PROJECT_MANAGER",
                         "DEVELOPER"
                 )
 
-                .requestMatchers("/documentation/**")
+                // change the code: allow access to /task-assignments and /task-assignments/** for ADMIN, PROJECT_MANAGER, DEVELOPER
+                .requestMatchers("/task-assignments", "/task-assignments/**")
                 .hasAnyRole(
                         "ADMIN",
                         "PROJECT_MANAGER",
                         "DEVELOPER"
                 )
 
-                .requestMatchers("/task-assignments/**")
+                .requestMatchers("/activity-logs", "/activity-logs/**")
                 .hasAnyRole(
                         "ADMIN",
                         "PROJECT_MANAGER"
                 )
 
-                .requestMatchers("/activity-logs/**")
-                .hasAnyRole(
-                        "ADMIN",
-                        "PROJECT_MANAGER"
-                )
-
-                .requestMatchers("/notifications/**")
+                .requestMatchers("/notifications", "/notifications/**")
                 .authenticated()
 
                 .anyRequest()
@@ -137,7 +156,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
     	CorsConfiguration config =new CorsConfiguration();
-    	config.setAllowedOrigins(List.of("http:localhost:5173","http:localhost:5174","http://localhost:5175"));
+//    	config.setAllowedOrigins(List.of("http:localhost:5173","http:localhost:5174","http://localhost:5175"));
+    	config.setAllowedOrigins(List.of(
+    		    "http://localhost:5173",
+    		    "http://localhost:5174",
+    		    "http://localhost:5175"
+    		));
     	config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
     	config.setAllowedHeaders(List.of("*"));
     	config.setAllowCredentials(true);

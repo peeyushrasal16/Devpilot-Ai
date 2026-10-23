@@ -6,4 +6,7 @@ import com.devpilot.ai.entities.Documentation;
 
 public interface DocumentationRepository extends JpaRepository<Documentation, Long> {
 
+	// change the code: delete all documentations for project
+	void deleteByProject_Id(Long projectId);
+
 }

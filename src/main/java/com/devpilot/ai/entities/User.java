@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -65,8 +66,14 @@ public class User implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return Arrays.asList(new SimpleGrantedAuthority("ROLE_" + role.name()));
+//		// TODO Auto-generated method stub
+//		return Arrays.asList(new SimpleGrantedAuthority("ROLE_" + role.name()));
+		// Role ke aage "ROLE_" prefix add kar rahe hain taaki Spring Security match kar sake
+	    String roleName = this.role.name(); // assuming role is an Enum or String
+	    if (!roleName.startsWith("ROLE_")) {
+	        roleName = "ROLE_" + roleName;
+	    }
+	    return Collections.singletonList(new SimpleGrantedAuthority(roleName));
 	}
 
 	@Override

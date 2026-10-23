@@ -12,4 +12,13 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
 
     long countByUser_IdAndRole(Long userId, ProjectMemberRole role);
 
+    // change the code: check duplicate member in project
+    boolean existsByUser_IdAndProject_Id(Long userId, Long projectId);
+
+    // change the code: check duplicate member excluding current id on update
+    boolean existsByUser_IdAndProject_IdAndIdNot(Long userId, Long projectId, Long id);
+
+    // change the code: delete all project members when project is deleted
+    void deleteByProject_Id(Long projectId);
+
 }

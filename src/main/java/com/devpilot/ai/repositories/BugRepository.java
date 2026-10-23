@@ -12,4 +12,7 @@ public interface BugRepository extends JpaRepository<Bug, Long> {
 	
 	long countByPriority(BugPriority priority);
 
+	// change the code: delete all bugs for project
+	void deleteByProject_Id(Long projectId);
+
 }
